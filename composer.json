@@ -7,8 +7,8 @@
 		"route",
 		"mouf"
 	],
-	"homepage" : "https://mouf-php.com/packages/mouf/integration.joomla.moufla",
-	"type" : "mouf-library",
+	"homepage" : "https://mouf-php.com/packages/mouf/integration.joomla.moufla-joomlaplugin",
+	"type" : "joomla-plugin",
 	"license" : "MIT",
 	"authors" : [{
 			"name" : "Guillaume Van Der Putte",
