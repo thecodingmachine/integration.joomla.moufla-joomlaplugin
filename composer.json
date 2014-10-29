@@ -22,6 +22,9 @@
 		"composer/installers" : "~1.0"
 	},
 	"extra": {
-        "installer-name": "moufla"
+        "installer-name": "moufla",
+        "installer-paths": {
+        	"plugins/system/{$name}/": ["type:joomla-plugin"]
+        }
     }
 }
