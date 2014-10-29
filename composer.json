@@ -24,7 +24,7 @@
 	"extra": {
         "installer-name": "moufla",
         "installer-paths": {
-        	"plugins/system/{$name}/": ["mouf/integration.joomla.moufla-joomlaplugin"]
+        	"plugins/system/{$name}/": ["type:joomla-plugin"]
         }
     }
 }
