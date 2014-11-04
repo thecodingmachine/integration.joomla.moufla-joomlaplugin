@@ -7,7 +7,7 @@ to find out what would have been the results. You can then add/delete/modify tho
 for the site itself, you need to flag JRouter so it doesn't continue to process the results.
 */
 
-// no direct access
+/* no direct access */
 defined( '_JEXEC' ) or die( 'Restricted access' );
 
 define('ROUTER_MODE_SKIP_SEF', 2);
@@ -16,8 +16,6 @@ define('ROUTER_MODE_SKIP_RAW', -1);
 use Mouf\Integration\Joomla\Moufla\Moufla;
 
 class plgSystemMoufla extends JPlugin {
-
-        // TODO test when and where it's called
 
     /**
     * Constructor - note in Joomla 2.5 PHP4.x is no longer supported so we can use this.
@@ -56,6 +54,8 @@ class plgSystemMoufla extends JPlugin {
     /**
      * @param $siteRouter
      * @param $uri
+     *
+     * @return associative array with routing values
      */
     public function parseRoute(&$siteRouter, &$uri) {
         $finalArray = array();
@@ -93,11 +93,13 @@ class plgSystemMoufla extends JPlugin {
     }
 
     /**
+     * No need for Moufla
      * @param $siteRouter
      * @param $uri
+     *
+     * @return associative array with routing values
      */
     public function buildRoute(&$siteRouter, &$uri) {
         return (array());
     }
-
 }
