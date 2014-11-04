@@ -74,13 +74,21 @@ class plgSystemMoufla extends JPlugin {
                 }
             }
         } else {
+            // Checking if the request is JSON.
+            // TODO Find a better way ?
+            $array = explode(",", str_replace(' ', '', strtolower($_SERVER["HTTP_ACCEPT"])));
+            for ($i = 0 ; $i < count($array) ; $i++) {
+                if ($array[$i] == "application/json") {
+                    $finalArray["tmpl"] = "component"; // Will not display Joomla template
+                    $finalArray["mouflaJson"] = "true";
+                    break;
+                }
+            }
             // On appelle notre composant pour ensuite afficher la vue du controlleur Mouf trouvé
             $finalArray["option"] = "com_moufla";
             $finalArray["view"] = "moufla";
             $finalArray["response"] = $response;
-            //$finalArray["tmpl"] = "component"; // Only if you don't want to have the main template
         }
-
         return ($finalArray);
     }
 
