@@ -12,7 +12,9 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 
 define('ROUTER_MODE_SKIP_SEF', 2);
 define('ROUTER_MODE_SKIP_RAW', -1);
- 
+
+use Mouf\Integration\Joomla\Moufla\Moufla;
+
 class plgSystemMoufla extends JPlugin {
 
         // TODO test when and where it's called
@@ -27,6 +29,10 @@ class plgSystemMoufla extends JPlugin {
     public function __construct(& $subject, $config) {
         parent::__construct($subject, $config);
         $this->loadLanguage();
+
+        require_once(__DIR__."/../../../mouf/Mouf.php");
+        // define the root URL here, because of a Mouf conflict
+        define('ROOT_URL', JURI::root(true).'/');
     }
 
     /**
@@ -43,7 +49,7 @@ class plgSystemMoufla extends JPlugin {
         $parseRouteCallback = array($this, 'parseRoute');
 
         // Attach the callback to the router
-        //$router->attachBuildRule($replaceRouteCallback);
+        $router->attachBuildRule($replaceRouteCallback);
         $router->attachParseRule($parseRouteCallback);
     }
 
@@ -52,36 +58,29 @@ class plgSystemMoufla extends JPlugin {
      * @param $uri
      */
     public function parseRoute(&$siteRouter, &$uri) {
-        echo "Je suis dans ParseRoute....";
-
-        /*var_dump($uri->current());
-        var_dump($uri->getQuery());die;*/
-
         $finalArray = array();
-        $queries = explode('&', $uri->getQuery());
-        //var_dump($queries);
+        $queries = explode('&', $uri->getPath());
 
-        $routeFound = false;
-        foreach ($queries as $value) {
-            $tmp = explode('=', $value);
-            if (count($tmp) > 1) {
-                if (strcmp($tmp[0], "option") == 0) {
-                    $routeFound = true;
-                } else {
+        // Call to vendor/mouf/integration...moufla
+        $moufla = new Moufla();
+        $response = $moufla->searchForRoute();
+
+        if ($response->hasVary() && strcmp($response->getVary()[0], "mouflaNotFound") == 0) {
+            // On refait le tableau comme on l'a eu pour laisser Joomla appeler ses propres modules/composants
+            foreach ($queries as $value) {
+                $tmp = explode('=', $value);
+                if (count($tmp) > 1) {
                     $finalArray[$tmp[0]] = $tmp[1];
                 }
             }
-        }
-        if (!$routeFound) {
+        } else {
+            // On appelle notre composant pour ensuite afficher la vue du controlleur Mouf trouvé
             $finalArray["option"] = "com_moufla";
             $finalArray["view"] = "moufla";
-            $finalArray["tmpl"] = "component";
+            $finalArray["response"] = $response;
+            //$finalArray["tmpl"] = "component"; // Only if you don't want to have the main template
         }
-        //var_dump($finalArray);exit;
-        // if (on veut du Mouf)
-        //$finalArray = array("option" => "com_moufla", "view" => "moufla", "id" => "42", "desc" => "yahourt", "task" => "doSomething");
-        //else
-        //$finalArray = array();
+
         return ($finalArray);
     }
 
@@ -90,59 +89,7 @@ class plgSystemMoufla extends JPlugin {
      * @param $uri
      */
     public function buildRoute(&$siteRouter, &$uri) {
-        echo "Je suis dans BuildRoute....";
         return (array());
     }
 
-
-    /**
-     * @param   JRouterSite  &$router  The Joomla Site Router
-     * @param   JURI         &$uri     The URI to parse
-     *
-     * @return  array  The array of processed URI variables
-     */
-    public function myBuildRoute(&$siteRouter, &$uri) {
-        echo "Je suis dans myBuildRoute....";
-        defined('_JEXEC') or die('Restricted access');
-
-//            $view = JRequest::getCmd('view',null);
-//            $layout	= JRequest::getCmd('layout',null);
-//            $task	= JRequest::getCmd('task',null);
-//
-//            JRequest::setVar('view', 'someview');
-//            JRequest::setVar('layout', 'default');
-//            JRequest::setVar('task', 'sometask');
-//
-        $lang = JFactory::getLanguage();
-        $lang->load('com_moufla', JPATH_ADMINISTRATOR);
-//
-        if (!class_exists('Moufla')) {
-            //var_dump('ezgzg');exit;
-            require_once ('/components/com_moufla/moufla.php');
-        }
-//
-        $controller = new Moufla();
-        $controller->sometask();
-//
-//            // revert system vars to previous state
-//
-//            if($view != null)
-//            {
-//                JRequest::setVar('view', $view);
-//            }
-//
-//            if($layout != null)
-//            {
-//                JRequest::setVar('layout', $layout);
-//            }
-//
-//            if($task != null)
-//            {
-//                JRequest::setVar('task', $task);
-//            }
-        /*var_dump("buildRoute");
-        var_dump($siteRouter);
-        var_dump($uri);
-        exit;*/
-    }
 }
