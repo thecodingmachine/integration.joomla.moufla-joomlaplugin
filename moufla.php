@@ -65,24 +65,21 @@ class plgSystemMoufla extends JPlugin {
         $moufla = new Moufla();
         $response = $moufla->searchForRoute();
 
+        // If the request is a normal Joomla request
         if ($response->hasVary() && strcmp($response->getVary()[0], "mouflaNotFound") == 0) {
-            // On refait le tableau comme on l'a eu pour laisser Joomla appeler ses propres modules/composants
+            // We create the final array for Joomla. It will call it own mods/components
             foreach ($queries as $value) {
                 $tmp = explode('=', $value);
                 if (count($tmp) > 1) {
                     $finalArray[$tmp[0]] = $tmp[1];
                 }
             }
+        // Else the request is a Mouf request
         } else {
-            // Checking if the request is JSON.
-            // TODO Find a better way ?
-            $array = explode(",", str_replace(' ', '', strtolower($_SERVER["HTTP_ACCEPT"])));
-            for ($i = 0 ; $i < count($array) ; $i++) {
-                if ($array[$i] == "application/json") {
-                    $finalArray["tmpl"] = "component"; // Will not display Joomla template
-                    $finalArray["mouflaJson"] = "true";
-                    break;
-                }
+            // Checking if the template has benn called or not.
+            if (!\Mouf::getJoomlaTemplate()->getTemplateCalled()) {
+                $finalArray["tmpl"] = "component"; // Will not display Joomla template
+                $finalArray["mouflaJson"] = "true";
             }
             // On appelle notre composant pour ensuite afficher la vue du controlleur Mouf trouvé
             $finalArray["option"] = "com_moufla";
@@ -97,7 +94,7 @@ class plgSystemMoufla extends JPlugin {
      * @param $siteRouter
      * @param $uri
      *
-     * @return associative array with routing values
+     * @return array associative array with routing values
      */
     public function buildRoute(&$siteRouter, &$uri) {
         return (array());
