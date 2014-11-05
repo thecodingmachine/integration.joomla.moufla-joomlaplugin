@@ -28,7 +28,7 @@ class plgSystemMoufla extends JPlugin {
         parent::__construct($subject, $config);
         $this->loadLanguage();
 
-        require_once(__DIR__."/../../../mouf/Mouf.php");
+        include_once(__DIR__."/../../../mouf/Mouf.php");
         // define the root URL here, because of a Mouf conflict
         define('ROOT_URL', JURI::root(true).'/');
     }
