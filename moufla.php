@@ -76,8 +76,21 @@ class plgSystemMoufla extends JPlugin {
             }
         // Else the request is a Mouf request
         } else {
-            // Checking if the template has benn called or not.
-            if (!\Mouf::getJoomlaTemplate()->getTemplateCalled()) {
+            // Checking if the template has been called or not.
+            $joomlaTemplate = Mouf::getJoomlaTemplate();
+
+            $joomlaTemplateCalled = false;
+            if (!$joomlaTemplate->getTemplateCalled()) {
+                if ($response instanceof \Mouf\Mvc\Splash\HtmlResponse) {
+                    $htmlElement = $response->getHtmlElement();
+                    if ($htmlElement instanceof \Mouf\Integration\Joomla\Moufla\JoomlaTemplate) {
+                        $joomlaTemplateCalled = true;
+                    }
+                }
+            }
+
+
+            if (!$joomlaTemplateCalled) {
                 $finalArray["tmpl"] = "component"; // Will not display Joomla template
                 $finalArray["mouflaJson"] = "true";
             }
