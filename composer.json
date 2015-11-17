@@ -8,7 +8,7 @@
 		"mouf"
 	],
 	"homepage" : "https://mouf-php.com/packages/mouf/integration.joomla.moufla-joomlaplugin",
-	"type" : "joomla-plugin",
+	"type" : "joomla-installer",
 	"license" : "MIT",
 	"authors" : [{
 			"name" : "Guillaume Van Der Putte",
@@ -19,7 +19,7 @@
 	"require" : {
 		"php" : ">=5.3.0",
 		"mouf/mouf" : "~2.0",
-		"composer/installers" : "~1.0"
+		"joomlatools/installer": "*"
 	},
 	"extra": {
         "installer-name": "moufla",
