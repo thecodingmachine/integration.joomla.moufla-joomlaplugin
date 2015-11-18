@@ -66,7 +66,7 @@ class plgSystemMoufla extends JPlugin {
         $response = $moufla->searchForRoute();
 
         // If the request is a normal Joomla request
-        if ($response->hasVary() && strcmp($response->getVary()[0], "mouflaNotFound") == 0) {
+        if ($response->hasHeader('Vary') && $response->getHeader('Vary')[0] == "mouflaNotFound") {
             // We create the final array for Joomla. It will call it own mods/components
             foreach ($queries as $value) {
                 $tmp = explode('=', $value);
@@ -76,8 +76,21 @@ class plgSystemMoufla extends JPlugin {
             }
         // Else the request is a Mouf request
         } else {
-            // Checking if the template has benn called or not.
-            if (!\Mouf::getJoomlaTemplate()->getTemplateCalled()) {
+            // Checking if the template has been called or not.
+            $joomlaTemplate = Mouf::getJoomlaTemplate();
+
+            $joomlaTemplateCalled = false;
+            if (!$joomlaTemplate->getTemplateCalled()) {
+                if ($response instanceof \Mouf\Mvc\Splash\HtmlResponse) {
+                    $htmlElement = $response->getHtmlElement();
+                    if ($htmlElement instanceof \Mouf\Integration\Joomla\Moufla\JoomlaTemplate) {
+                        $joomlaTemplateCalled = true;
+                    }
+                }
+            }
+
+
+            if (!$joomlaTemplateCalled) {
                 $finalArray["tmpl"] = "component"; // Will not display Joomla template
                 $finalArray["mouflaJson"] = "true";
             }
